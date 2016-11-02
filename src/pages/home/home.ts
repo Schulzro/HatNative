@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, Platform } from 'ionic-angular';
+import { NavController, Platform, Events } from 'ionic-angular';
 import { GoogleMap, GoogleMapsEvent, GoogleMapsLatLng, Geolocation } from 'ionic-native';
  
 @Component({
@@ -10,7 +10,7 @@ export class Home {
  
     map: GoogleMap;
  
-    constructor(public navCtrl: NavController, public platform: Platform) {
+    constructor(public navCtrl: NavController, public platform: Platform, public events : Events) {
         platform.ready().then(() => {
             this.loadMap();
         });
@@ -18,14 +18,23 @@ export class Home {
  
     loadMap(){
        Geolocation.getCurrentPosition().then((position)=>{
-        let location = new GoogleMapsLatLng(position.coords.latitude,position.coords.longitude);
- 
-        this.map = new GoogleMap('map', {
+        this.createMap(position.coords.latitude,position.coords.longitude);
+       }).catch((error)=>{
+         console.log('Could not get position ',error.code,error.message);
+         this.createMap(37.5650172,126.8494637);
+       });
+    }
+
+    createMap(lat : number, lng : number) : void{
+
+       let location = new GoogleMapsLatLng(lat,lng);
+
+       this.map = new GoogleMap('map', {
           'backgroundColor': 'white',
           'controls': {
             'compass': true,
             'indoorPicker': true,
-            'zoom': true
+            'myLocationButton' : true,
           },
           'gestures': {
             'scroll': true,
@@ -35,7 +44,7 @@ export class Home {
           },
           'camera': {
             'latLng': location,
-            'tilt': 30,
+            'tilt': 10,
             'zoom': 15,
             'bearing': 50
           }
@@ -44,6 +53,15 @@ export class Home {
         this.map.on(GoogleMapsEvent.MAP_READY).subscribe(() => {
             console.log('Map is ready!');
         });
-       }) 
+
+        this.events.subscribe('MenuOpen',()=>{
+          console.log('Sub to ev open');
+          this.map.setClickable(false);
+        });
+
+        this.events.subscribe('MenuClose',()=>{
+          console.log('Sub to ev close');
+          this.map.setClickable(true);
+        });
     }
 }

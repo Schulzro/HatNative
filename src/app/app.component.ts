@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
-import { Nav, Platform, Menu, MenuController } from 'ionic-angular';
-import { StatusBar, Splashscreen } from 'ionic-native';
+import { Nav, Platform, Menu, Events } from 'ionic-angular';
+import { StatusBar, Splashscreen, GoogleMap } from 'ionic-native';
 
 import { Home } from '../pages/home/home';
 import { Page1 } from '../pages/page1/page1';
@@ -17,7 +17,7 @@ export class MyApp {
 
   pages: Array<{title: string, component: any}>;
 
-  constructor(public platform: Platform) {
+  constructor(public platform: Platform, public events : Events) {
     this.initializeApp();
 
     // used for an example of ngFor and navigation
@@ -42,5 +42,15 @@ export class MyApp {
     // Reset the content nav to have just this page
     // we wouldn't want the back button to show in this scenario
     this.nav.setRoot(page.component);
+  }
+
+  menuOpened():void{
+    console.log("Menu Opened");
+    this.events.publish('MenuOpen');
+  }
+
+  menuClosed():void{
+    console.log("Menu Closed");
+    this.events.publish('MenuClose');
   }
 }

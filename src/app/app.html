@@ -1,4 +1,4 @@
-<ion-menu type ="push" [content]="content">
+<ion-menu [content]="content" (ionOpen)="menuOpened()" (ionClose)="menuClosed()">
   <ion-header>
     <ion-toolbar>
       <ion-title>Menu</ion-title>
